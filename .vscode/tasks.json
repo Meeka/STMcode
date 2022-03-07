@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: arm-none-eabi-gcc.exe build active file",
+			"command": "C:\\Program Files (x86)\\GNU Arm Embedded Toolchain\\10 2021.10\\bin/arm-none-eabi-gcc.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe",
+				"-mcpu=cortex-m4",
+				"-mthumb"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: \"C:\\Program Files (x86)\\GNU Arm Embedded Toolchain\\10 2021.10\\bin/arm-none-eabi-gcc.exe\""
+		}
+	]
+}
