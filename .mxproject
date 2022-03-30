@@ -6,20 +6,23 @@ SourceFiles=Core\Src\main.c;Core\Src\stm32f4xx_it.c;Core\Src\stm32f4xx_hal_msp.c
 HeaderPath=Drivers\STM32F4xx_HAL_Driver\Inc;Drivers\STM32F4xx_HAL_Driver\Inc\Legacy;Drivers\CMSIS\Device\ST\STM32F4xx\Include;Drivers\CMSIS\Include;Core\Inc;
 CDefines=USE_HAL_DRIVER;STM32F446xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
+[]
+SourceFiles=;;
+
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=3
-HeaderFiles#0=D:/Documents/GitHub/STMcode/Core/Inc/stm32f4xx_it.h
-HeaderFiles#1=D:/Documents/GitHub/STMcode/Core/Inc/stm32f4xx_hal_conf.h
-HeaderFiles#2=D:/Documents/GitHub/STMcode/Core/Inc/main.h
+HeaderFiles#0=D:/Documents/GitHub/STMcode_HAL/Core/Inc/stm32f4xx_it.h
+HeaderFiles#1=D:/Documents/GitHub/STMcode_HAL/Core/Inc/stm32f4xx_hal_conf.h
+HeaderFiles#2=D:/Documents/GitHub/STMcode_HAL/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=D:/Documents/GitHub/STMcode/Core/Inc
+HeaderPath#0=D:/Documents/GitHub/STMcode_HAL/Core/Inc
 HeaderFiles=;
 SourceFileListSize=3
-SourceFiles#0=D:/Documents/GitHub/STMcode/Core/Src/stm32f4xx_it.c
-SourceFiles#1=D:/Documents/GitHub/STMcode/Core/Src/stm32f4xx_hal_msp.c
-SourceFiles#2=D:/Documents/GitHub/STMcode/Core/Src/main.c
+SourceFiles#0=D:/Documents/GitHub/STMcode_HAL/Core/Src/stm32f4xx_it.c
+SourceFiles#1=D:/Documents/GitHub/STMcode_HAL/Core/Src/stm32f4xx_hal_msp.c
+SourceFiles#2=D:/Documents/GitHub/STMcode_HAL/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=D:/Documents/GitHub/STMcode/Core/Src
+SourcePath#0=D:/Documents/GitHub/STMcode_HAL/Core/Src
 SourceFiles=;
 

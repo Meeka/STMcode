@@ -18,8 +18,7 @@
         {
             "name": "STM32 F4",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/Drivers/CMSIS/Include/"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",
