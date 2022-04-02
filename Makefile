@@ -39,7 +39,9 @@ C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/system_stm32f4xx.c \
 startup_stm32f446xx.c \
-Drivers/Src/RccConfig.c
+Drivers/Src/RccConfig.c \
+Drivers/Src/SysTick.c \
+Drivers/Src/Gpio.c
 
 # ASM sources
 ASM_SOURCES =

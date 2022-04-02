@@ -1,6 +1,7 @@
 #include "stdint.h"
 #include "system_stm32f4xx.h"
 #include "stm32f4xx.h"
+#include "SysTick.h"
 
 // Constants from linker
 extern uint32_t _sidata;    // Start of init data
@@ -64,7 +65,7 @@ void UsageFault_Handler (void)              { Default_Handler(); }
 void SVC_Handler (void)                     { Default_Handler(); }
 void DebugMon_Handler (void)                { Default_Handler(); }
 void PendSV_Handler (void)                  { Default_Handler(); }
-void SysTick_Handler (void)                 { Default_Handler(); }
+void SysTick_Handler (void)                 { IncSysTick(); }
 void WWDG_IRQHandler (void)                 { Default_Handler(); }
 void PVD_IRQHandler (void)                  { Default_Handler(); }
 void TAMP_STAMP_IRQHandler (void)           { Default_Handler(); }
