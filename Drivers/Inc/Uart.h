@@ -5,12 +5,11 @@
 
 
 /*********STEPS***********
- * 1. Enable the UART CLOCK and GPIO CLOCK
- * 2. Configure the UART PINs for alternate function.
- * 3. Enable the USART by writing the UE bit in USART_CR1 register to 1.
- * 4. Program the M bit in USART_CR1 to define the word length.
- * 5. Select the desired baud rate using the USART_BRR register.
- * 6. Enable the Transmitter/Receiver by setting the TE and RE bits in USART_CR1 register.
+ * 1. Enable the UART CLOCK
+ * 2. Enable the USART by writing the UE bit in USART_CR1 register to 1.
+ * 3. Program the M bit in USART_CR1 to define the word length.
+ * 4. Select the desired baud rate using the USART_BRR register.
+ * 5. Enable the Transmitter/Receiver by setting the TE and RE bits in USART_CR1 register.
  * ***********************/
 void UART2Config (void);
 

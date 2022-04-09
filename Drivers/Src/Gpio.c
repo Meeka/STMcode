@@ -1,15 +1,99 @@
 #include "Gpio.h"
 
+void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
 
-void GPIO_Config (void) {
     //1. Enable GPIO Clock
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN << ((uint32_t)GPIOx ^ AHB1PERIPH_BASE) % 400;
 
-    //2. Set the pin as OUTPUT
-    GPIOA->MODER |= GPIO_MODER_MODE5_0; //pin PA5(bits 11:10) as output (01)
+    //2. Set pin mode
+    switch(GPIO_Settings->Mode) {
+        case GPIO_MODE_INPUT:
+            GPIOx->MODER &=  ~(GPIO_MODER_MODER0 << (GPIO_Settings->Pin * 2));
+            break;
+        case GPIO_MODE_OUTPUT:
+            GPIOx->MODER |= GPIO_MODER_MODER0_0 << (GPIO_Settings->Pin * 2);     //Output (0b01)
+            break;
+        case GPIO_MODE_ALT:
+            GPIOx->MODER |= GPIO_MODER_MODER0_1 << (GPIO_Settings->Pin * 2);    //AF (0b10)
+            break;
+    }
 
-    //3. Configure OUTPUT MODE
-    GPIOA->OTYPER &= ~(GPIO_OTYPER_OT5);   //bit 5 = 0 -->output push pull
-    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED5;  //Pin PA5 (bits 11:10) as fast speed (1:0)
-    GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPD5);   //Pin PA5 (bits 11:10) are 0:0 --> no pull up or pulldown
+    //2a. Set output mode if pin is output
+    if(GPIO_Settings->Mode == GPIO_MODE_OUTPUT) {
+        switch(GPIO_Settings->OType) {
+            case GPIO_TYPE_PUSH_PULL:
+                GPIOx->OTYPER &= ~(GPIO_OTYPER_OT0 << GPIO_Settings->Pin);    //Push-pull (0b0)
+                break;
+            case GPIO_TYPE_OPEN_DRAIN:
+                GPIOx->OTYPER |= GPIO_OTYPER_OT0 << GPIO_Settings->Pin;       //Open-drain (0b1)
+                break;
+        }
+    }
+
+    //3. Configure speed
+    switch(GPIO_Settings->Speed) {
+        case GPIO_SPEED_FREQ_LOW:
+            GPIOx->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEED0 << (GPIO_Settings->Pin * 2));  //Low-speed (0b00)
+            break;
+        case GPIO_SPEED_FREQ_MED:
+            GPIOx->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_0 << (GPIO_Settings->Pin * 2);   //Med-speed (0b01)
+            break;
+        case GPIO_SPEED_FREQ_HIGH:
+            GPIOx->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_1 << (GPIO_Settings->Pin * 2);   //High-speed (0b10)
+            break;
+        case GPIO_SPEED_FREQ_VERY_HIGH:
+            GPIOx->OSPEEDR |= GPIO_OSPEEDR_OSPEED0 << (GPIO_Settings->Pin * 2);     //Very high-speed (0b11)
+            break;
+    }
+
+    //4. Configure pull-up or pull-down
+    switch(GPIO_Settings->Pull) {
+        case GPIO_PULL_NONE:
+            GPIOx->PUPDR &= ~(GPIO_PUPDR_PUPD0 << (GPIO_Settings->Pin * 2));    //No pull (0b00)
+            break;
+        case  GPIO_PULL_UP:
+            GPIOx->PUPDR |= GPIO_PUPDR_PUPD0_0 << (GPIO_Settings->Pin * 2);     //Pull up (0b01)
+            break;
+        case GPIO_PULL_DOWN:
+            GPIOx->PUPDR |= GPIO_PUPDR_PUPD0_1 << (GPIO_Settings->Pin * 2);     //Pull up (0b10)
+            break;
+    }
+
+    //5. Configure alternate function
+    if(GPIO_Settings->Mode == GPIO_MODE_ALT) {
+        if(GPIO_Settings->Pin > 7) {
+            //Use GPIO Alternate Function High register (For pins 15:8)
+            GPIOx->AFR[1] |= GPIO_Settings->Alt << ((GPIO_Settings->Pin >> 7) * 4);
+        }
+        else {
+            //Use GPIO Alternate Function Low register (For pins 7:0)
+            GPIOx->AFR[0] |= GPIO_Settings->Alt << (GPIO_Settings->Pin * 4);
+        }
+    }
+}
+
+void GPIO_Init (void) {
+
+    GPIO_InitTypeDef LED_Gpio = {0};
+    GPIO_InitTypeDef USART_Gpio[2] = {0};
+
+    //1. Setup User LED on PA5
+    LED_Gpio.Pin = GPIO_PIN_5;
+    LED_Gpio.Mode = GPIO_MODE_OUTPUT;
+    LED_Gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+    LED_Gpio.Pull = GPIO_PULL_NONE;
+    GPIO_Config(&LED_Gpio, GPIOA);
+
+    //2. Set up GPIO for USART2 on PA2 and PA3
+    USART_Gpio[0].Pin = GPIO_PIN_2;
+    USART_Gpio[0].Mode = GPIO_MODE_ALT;
+    USART_Gpio[0].Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    USART_Gpio[0].Alt = GPIO_AF7_USART2;
+    GPIO_Config(&USART_Gpio[0], GPIOA);
+
+    USART_Gpio[1].Pin = GPIO_PIN_3;
+    USART_Gpio[1].Mode = GPIO_MODE_ALT;
+    USART_Gpio[1].Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    USART_Gpio[1].Alt = GPIO_AF7_USART2;
+    GPIO_Config(&USART_Gpio[1], GPIOA);
 }
