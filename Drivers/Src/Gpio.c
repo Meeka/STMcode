@@ -75,7 +75,6 @@ void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
 void GPIO_Init (void) {
 
     GPIO_InitTypeDef LED_Gpio = {0};
-    GPIO_InitTypeDef USART_Gpio[2] = {0};
 
     //1. Setup User LED on PA5
     LED_Gpio.Pin = GPIO_PIN_5;
@@ -84,16 +83,5 @@ void GPIO_Init (void) {
     LED_Gpio.Pull = GPIO_PULL_NONE;
     GPIO_Config(&LED_Gpio, GPIOA);
 
-    //2. Set up GPIO for USART2 on PA2 and PA3
-    USART_Gpio[0].Pin = GPIO_PIN_2;
-    USART_Gpio[0].Mode = GPIO_MODE_ALT;
-    USART_Gpio[0].Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    USART_Gpio[0].Alt = GPIO_AF7_USART2;
-    GPIO_Config(&USART_Gpio[0], GPIOA);
-
-    USART_Gpio[1].Pin = GPIO_PIN_3;
-    USART_Gpio[1].Mode = GPIO_MODE_ALT;
-    USART_Gpio[1].Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    USART_Gpio[1].Alt = GPIO_AF7_USART2;
-    GPIO_Config(&USART_Gpio[1], GPIOA);
 }
+

@@ -124,7 +124,6 @@ void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx);
 
 /**********STEPS************
  * 1. Setup User LED on PA5
- * 2. Set up GPIO for USART2 on PA2 and PA3
  * *************************/
 void GPIO_Init (void);
 

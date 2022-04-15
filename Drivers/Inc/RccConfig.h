@@ -22,11 +22,23 @@
 
 
 #include "stm32f446xx.h"
+#include "system_stm32f4xx.h"
 
 #define PLL_M   4
 #define PLL_N   180
 #define PLL_P   0   //PLLP = 2
 
+typedef enum {
+    NO_DIV,
+    DIV_2,
+    DIV_4,
+    DIV_8,
+    DIV_16
+} RCC_APBPresc_TypeDef;
+
 void SysClockConfig (void);
+uint32_t GetHCLKFreq (void);
+uint32_t GetPCLK1Freq (void);
+uint32_t GetPCLK2Freq (void);
 
 #endif

@@ -1,5 +1,19 @@
 #include "RccConfig.h"
 
+static volatile uint32_t HCLK_Freq;
+
+//Maps divider values for APB freq calculation
+RCC_APBPresc_TypeDef APBPrescTableDiv[8] = {
+    NO_DIV,
+    NO_DIV,
+    NO_DIV,
+    NO_DIV,
+    DIV_2,
+    DIV_4,
+    DIV_8,
+    DIV_16
+};
+
 void SysClockConfig (void) {
     //1. Enable HSE and wait for the HSE to be ready
     RCC->CR |= RCC_CR_HSEON;
@@ -24,5 +38,25 @@ void SysClockConfig (void) {
     //7. Select the clock source and wait for it to be set
     RCC->CFGR |= RCC_CFGR_SW_PLL;
     while((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+    //8. Set var to keep track of HCLK frequency
+    HCLK_Freq = 180000000;
+}
+
+uint32_t GetHCLKFreq (void) {
+    return HCLK_Freq;
+}
+
+uint32_t GetPCLK1Freq (void) {
+    uint32_t temp = RCC->CFGR;
+    temp &= RCC_CFGR_PPRE1_Msk;
+
+    return HCLK_Freq >> APBPrescTableDiv[(temp >> RCC_CFGR_PPRE1_Pos)];
+}
+
+uint32_t GetPCLK2Freq (void) {
+    uint32_t temp = RCC->CFGR;
+    temp &= RCC_CFGR_PPRE2_Msk;
+
+    return HCLK_Freq >> APBPrescTableDiv[(temp >> RCC_CFGR_PPRE2_Pos)];
 }
 
