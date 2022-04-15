@@ -127,5 +127,6 @@ void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx);
  * *************************/
 void GPIO_Init (void);
 
+void GPIO_Toggle (GPIO_PinTypeDef GPIO_Pin, GPIO_TypeDef* GPIOx);
 
 #endif

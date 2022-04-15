@@ -85,3 +85,6 @@ void GPIO_Init (void) {
 
 }
 
+void GPIO_Toggle (GPIO_PinTypeDef GPIO_Pin, GPIO_TypeDef* GPIOx) {
+    GPIOx->ODR ^= (1 << GPIO_Pin);
+}
