@@ -1,9 +1,33 @@
 #include "Gpio.h"
+#include "RccConfig.h"
 
 void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
 
     //1. Enable GPIO Clock
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN << ((uint32_t)GPIOx ^ AHB1PERIPH_BASE) % 400;
+    if (GPIOx == GPIOA) {
+        PeriphClkEnable(GPIOA_periph);
+    }
+    else if (GPIOx == GPIOB) {
+        PeriphClkEnable(GPIOB_periph);
+    }
+    else if  (GPIOx == GPIOC) {
+        PeriphClkEnable(GPIOC_periph);
+    }
+    else if (GPIOx == GPIOD) {
+        PeriphClkEnable(GPIOD_periph);
+    }
+    else if (GPIOx == GPIOE) {
+        PeriphClkEnable(GPIOE_periph);
+    }
+    else if (GPIOx == GPIOF) {
+        PeriphClkEnable(GPIOF_periph);
+    }
+    else if (GPIOx == GPIOG) {
+        PeriphClkEnable(GPIOG_periph);
+    }
+    else if (GPIOx == GPIOH) {
+        PeriphClkEnable(GPIOH_periph);
+    }
 
     //2. Set pin mode
     switch(GPIO_Settings->Mode) {

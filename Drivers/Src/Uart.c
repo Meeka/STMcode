@@ -1,5 +1,6 @@
 #include "Uart.h"
 #include "Gpio.h"
+#include "RccConfig.h"
 
 void UART2Config (void) {
 
@@ -19,7 +20,7 @@ void UART2Config (void) {
     GPIO_Config(&USART_Gpio[1], GPIOA);
 
     //2. Enable the UART CLOCK
-    RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+    PeriphClkEnable(USART2_periph);
     
     //3. Enable the USART by writing the UE bit in USART_CR1 register to 1.
     USART2->CR1 = 0x0;               //reset all

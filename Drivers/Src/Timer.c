@@ -1,9 +1,10 @@
 #include "Timer.h"
+#include "RccConfig.h"
 
 
 void TIM6Config (void) {
     //1. Enable timer clock
-    RCC->APB1ENR |= (1<<4);
+    PeriphClkEnable(TIM6_periph);
 
     //2. Set the prescaler and the ARR
     TIM6->PSC |= 90 - 1;    // 90Mhz/90 = 1Mhz ~~ 1uS delay
