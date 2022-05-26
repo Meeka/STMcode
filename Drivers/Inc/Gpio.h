@@ -2,6 +2,7 @@
 #define __GPIO_H
 
 #include "stm32f446xx.h"
+#include "RccConfig.h"
 
 typedef enum {
     GPIO_PIN_0,
@@ -103,12 +104,14 @@ typedef enum {
 } GPIO_AltFuncTypeDef;
 
 typedef struct {
-    GPIO_PinTypeDef     Pin;    //GPIO Pin
-    GPIO_ModeTypeDef    Mode;   //Operating mode
-    GPIO_OutputTypeDef  OType;  //Output type
-    GPIO_PullTypeDef    Pull;   //Pull-up or Pull-down
-    GPIO_SpeedTypeDef   Speed;  //Speed for pin
-    GPIO_AltFuncTypeDef Alt;    //Peripheral to be connected to pin
+    GPIO_PinTypeDef     Pin;       //GPIO Pin
+    GPIO_ModeTypeDef    Mode;      //Operating mode
+    GPIO_OutputTypeDef  OType;     //Output type
+    GPIO_PullTypeDef    Pull;      //Pull-up or Pull-down
+    GPIO_SpeedTypeDef   Speed;     //Speed for pin
+    GPIO_AltFuncTypeDef Alt;       //Peripheral to be connected to pin
+    RCC_Periph_TypeDef  ClkEn;     //Peripheral clock enable in RCC
+    GPIO_TypeDef*       RegOffset; //Register Offset
 } GPIO_InitTypeDef;
 
 
@@ -120,7 +123,7 @@ typedef struct {
  * 4. Configure pull-up or pull-down
  * 5. Configure alternate function
  * *************************/
-void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx);
+void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings);
 
 /**********STEPS************
  * 1. Setup User LED on PA5

@@ -2,10 +2,9 @@
 
 int main (void) {
     SysClockConfig();
-    //TIM6Config(); -- No need, using SysTick now for delay function
     InitSysTick();
     GPIO_Init();
-    UART2Config();
+    UART_Init();
 
     while (1) {
         GPIO_Toggle(GPIO_PIN_5, GPIOA);

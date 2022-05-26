@@ -17,7 +17,7 @@ void InitSysTick (void) {
 }
 
 void IncSysTick (void) {
-    TickCount ++;
+    TickCount++;
 }
 
 uint32_t GetSysTick (void) {

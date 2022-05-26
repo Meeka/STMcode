@@ -2,6 +2,14 @@
 #define __UART_H
 
 #include "stm32f446xx.h"
+#include "Gpio.h"
+#include "RccConfig.h"
+
+typedef struct {
+    GPIO_InitTypeDef USART_Gpio[2];
+    RCC_Periph_TypeDef ClkEn;
+    USART_TypeDef* RegOffset;
+} UART_InitTypeDef;
 
 
 /*********STEPS***********
@@ -11,7 +19,7 @@
  * 4. Select the desired baud rate using the USART_BRR register.
  * 5. Enable the Transmitter/Receiver by setting the TE and RE bits in USART_CR1 register.
  * ***********************/
-void UART2Config (void);
+void UART_Config (UART_InitTypeDef* USART_Settings);
 
 /**************STEPS**************
  * 1. Write the data to send in the USART_DR register (this clears the TXE bit). Repeat this
@@ -29,9 +37,9 @@ void UART2_SendString (char* string);
  * ********************************/
 uint8_t UART2_GetChar (void);
 
-
-
-
-
+/************STEPS************
+ * 1. Setup terminal on USART2
+ * ***************************/
+void UART_Init(void);
 
 #endif

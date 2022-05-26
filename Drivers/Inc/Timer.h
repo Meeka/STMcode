@@ -2,6 +2,7 @@
 #define __TIMER_H
 
 #include "stm32f446xx.h"
+#include "RccConfig.h"
 
 
     /****** STEPS **********

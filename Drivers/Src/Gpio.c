@@ -1,44 +1,20 @@
 #include "Gpio.h"
-#include "RccConfig.h"
 
-void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
+void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings) {
 
     //1. Enable GPIO Clock
-    if (GPIOx == GPIOA) {
-        PeriphClkEnable(GPIOA_periph);
-    }
-    else if (GPIOx == GPIOB) {
-        PeriphClkEnable(GPIOB_periph);
-    }
-    else if  (GPIOx == GPIOC) {
-        PeriphClkEnable(GPIOC_periph);
-    }
-    else if (GPIOx == GPIOD) {
-        PeriphClkEnable(GPIOD_periph);
-    }
-    else if (GPIOx == GPIOE) {
-        PeriphClkEnable(GPIOE_periph);
-    }
-    else if (GPIOx == GPIOF) {
-        PeriphClkEnable(GPIOF_periph);
-    }
-    else if (GPIOx == GPIOG) {
-        PeriphClkEnable(GPIOG_periph);
-    }
-    else if (GPIOx == GPIOH) {
-        PeriphClkEnable(GPIOH_periph);
-    }
+    PeriphClkEnable(GPIO_Settings->ClkEn);
 
     //2. Set pin mode
     switch(GPIO_Settings->Mode) {
         case GPIO_MODE_INPUT:
-            GPIOx->MODER &=  ~(GPIO_MODER_MODER0 << (GPIO_Settings->Pin * 2));
+            GPIO_Settings->RegOffset->MODER &=  ~(GPIO_MODER_MODER0 << (GPIO_Settings->Pin * 2));
             break;
         case GPIO_MODE_OUTPUT:
-            GPIOx->MODER |= GPIO_MODER_MODER0_0 << (GPIO_Settings->Pin * 2);     //Output (0b01)
+            GPIO_Settings->RegOffset->MODER |= GPIO_MODER_MODER0_0 << (GPIO_Settings->Pin * 2);     //Output (0b01)
             break;
         case GPIO_MODE_ALT:
-            GPIOx->MODER |= GPIO_MODER_MODER0_1 << (GPIO_Settings->Pin * 2);    //AF (0b10)
+            GPIO_Settings->RegOffset->MODER |= GPIO_MODER_MODER0_1 << (GPIO_Settings->Pin * 2);    //AF (0b10)
             break;
     }
 
@@ -46,10 +22,10 @@ void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
     if(GPIO_Settings->Mode == GPIO_MODE_OUTPUT) {
         switch(GPIO_Settings->OType) {
             case GPIO_TYPE_PUSH_PULL:
-                GPIOx->OTYPER &= ~(GPIO_OTYPER_OT0 << GPIO_Settings->Pin);    //Push-pull (0b0)
+                GPIO_Settings->RegOffset->OTYPER &= ~(GPIO_OTYPER_OT0 << GPIO_Settings->Pin);    //Push-pull (0b0)
                 break;
             case GPIO_TYPE_OPEN_DRAIN:
-                GPIOx->OTYPER |= GPIO_OTYPER_OT0 << GPIO_Settings->Pin;       //Open-drain (0b1)
+                GPIO_Settings->RegOffset->OTYPER |= GPIO_OTYPER_OT0 << GPIO_Settings->Pin;       //Open-drain (0b1)
                 break;
         }
     }
@@ -57,29 +33,29 @@ void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
     //3. Configure speed
     switch(GPIO_Settings->Speed) {
         case GPIO_SPEED_FREQ_LOW:
-            GPIOx->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEED0 << (GPIO_Settings->Pin * 2));  //Low-speed (0b00)
+            GPIO_Settings->RegOffset->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEED0 << (GPIO_Settings->Pin * 2));  //Low-speed (0b00)
             break;
         case GPIO_SPEED_FREQ_MED:
-            GPIOx->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_0 << (GPIO_Settings->Pin * 2);   //Med-speed (0b01)
+            GPIO_Settings->RegOffset->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_0 << (GPIO_Settings->Pin * 2);   //Med-speed (0b01)
             break;
         case GPIO_SPEED_FREQ_HIGH:
-            GPIOx->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_1 << (GPIO_Settings->Pin * 2);   //High-speed (0b10)
+            GPIO_Settings->RegOffset->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_1 << (GPIO_Settings->Pin * 2);   //High-speed (0b10)
             break;
         case GPIO_SPEED_FREQ_VERY_HIGH:
-            GPIOx->OSPEEDR |= GPIO_OSPEEDR_OSPEED0 << (GPIO_Settings->Pin * 2);     //Very high-speed (0b11)
+            GPIO_Settings->RegOffset->OSPEEDR |= GPIO_OSPEEDR_OSPEED0 << (GPIO_Settings->Pin * 2);     //Very high-speed (0b11)
             break;
     }
 
     //4. Configure pull-up or pull-down
     switch(GPIO_Settings->Pull) {
         case GPIO_PULL_NONE:
-            GPIOx->PUPDR &= ~(GPIO_PUPDR_PUPD0 << (GPIO_Settings->Pin * 2));    //No pull (0b00)
+            GPIO_Settings->RegOffset->PUPDR &= ~(GPIO_PUPDR_PUPD0 << (GPIO_Settings->Pin * 2));    //No pull (0b00)
             break;
         case  GPIO_PULL_UP:
-            GPIOx->PUPDR |= GPIO_PUPDR_PUPD0_0 << (GPIO_Settings->Pin * 2);     //Pull up (0b01)
+            GPIO_Settings->RegOffset->PUPDR |= GPIO_PUPDR_PUPD0_0 << (GPIO_Settings->Pin * 2);     //Pull up (0b01)
             break;
         case GPIO_PULL_DOWN:
-            GPIOx->PUPDR |= GPIO_PUPDR_PUPD0_1 << (GPIO_Settings->Pin * 2);     //Pull up (0b10)
+            GPIO_Settings->RegOffset->PUPDR |= GPIO_PUPDR_PUPD0_1 << (GPIO_Settings->Pin * 2);     //Pull up (0b10)
             break;
     }
 
@@ -87,11 +63,11 @@ void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings, GPIO_TypeDef* GPIOx) {
     if(GPIO_Settings->Mode == GPIO_MODE_ALT) {
         if(GPIO_Settings->Pin > 7) {
             //Use GPIO Alternate Function High register (For pins 15:8)
-            GPIOx->AFR[1] |= GPIO_Settings->Alt << ((GPIO_Settings->Pin >> 7) * 4);
+            GPIO_Settings->RegOffset->AFR[1] |= GPIO_Settings->Alt << ((GPIO_Settings->Pin >> 7) * 4);
         }
         else {
             //Use GPIO Alternate Function Low register (For pins 7:0)
-            GPIOx->AFR[0] |= GPIO_Settings->Alt << (GPIO_Settings->Pin * 4);
+            GPIO_Settings->RegOffset->AFR[0] |= GPIO_Settings->Alt << (GPIO_Settings->Pin * 4);
         }
     }
 }
@@ -105,7 +81,10 @@ void GPIO_Init (void) {
     LED_Gpio.Mode = GPIO_MODE_OUTPUT;
     LED_Gpio.Speed = GPIO_SPEED_FREQ_HIGH;
     LED_Gpio.Pull = GPIO_PULL_NONE;
-    GPIO_Config(&LED_Gpio, GPIOA);
+    LED_Gpio.ClkEn.Bus = &RCC->AHB1ENR;
+    LED_Gpio.ClkEn.Offset = RCC_AHB1ENR_GPIOAEN;
+    LED_Gpio.RegOffset = GPIOA;
+    GPIO_Config(&LED_Gpio);
 
 }
 
