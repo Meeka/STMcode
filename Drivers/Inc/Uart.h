@@ -28,14 +28,14 @@ void UART_Config (UART_InitTypeDef* USART_Settings);
  *    That the transmission of t he last frame is complete. This is required for instance when 
  *    the USART is disabled or enters the Halt mode to avoid corrupting the last transmission.
  * *******************************/
-void UART2_SendChar (uint8_t c);
-void UART2_SendString (char* string);
+void UART_SendChar (uint8_t c, USART_TypeDef* USARTx);
+void UART_SendString (char* string, USART_TypeDef* USARTx);
 
 /***************STEPS**************
  * 1. Wait for the RXNE bit to set. It indicates that the data has been received and can be read.
  * 2. Read the data from USART_DR register. This also clears the RXNE bit
  * ********************************/
-uint8_t UART2_GetChar (void);
+uint8_t UART_GetChar (USART_TypeDef* USARTx);
 
 /************STEPS************
  * 1. Setup terminal on USART2

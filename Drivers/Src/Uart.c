@@ -27,7 +27,7 @@ void UART_Init (void) {
 
 void UART_Config (UART_InitTypeDef* USART_Settings) {
 
-    //1. Set up GPIO for USART2 on PA2 and PA3
+    //1. Set up GPIO for USART on PA2 and PA3
     GPIO_Config(&USART_Settings->USART_Gpio[0]);
     GPIO_Config(&USART_Settings->USART_Gpio[1]);
 
@@ -49,22 +49,22 @@ void UART_Config (UART_InitTypeDef* USART_Settings) {
     USART_Settings->RegOffset->CR1 |= USART_CR1_TE;    //TE=1 Enable TX
 }
 
-void UART2_SendChar (uint8_t c) {
-    USART2->DR = c;     //Load data into DR register
-    while (!(USART2->SR & USART_SR_TC));    //wait for TC to set... This indicates that the data has been transmitted
+void UART_SendChar (uint8_t c, USART_TypeDef* USARTx) {
+    USARTx->DR = c;     //Load data into DR register
+    while (!(USARTx->SR & USART_SR_TC));    //wait for TC to set... This indicates that the data has been transmitted
 }
 
-void UART2_SendString (char* string) {
+void UART_SendString (char* string, USART_TypeDef* USARTx) {
     while (*string != '\0') {
-        UART2_SendChar(*string);
+        UART_SendChar(*string, USARTx);
         string++;
     }
 }
 
 //ToDo: Improve to remove polling
-uint8_t UART2_GetChar (void) {
+uint8_t UART_GetChar (USART_TypeDef* USARTx) {
     uint8_t temp;
-    while (!(USART2->SR & USART_SR_RXNE)); //wait for RXNE bit to set
-    temp = USART2->DR;                      // Read the data. This clears the RXNE bit.
+    while (!(USARTx->SR & USART_SR_RXNE)); //wait for RXNE bit to set
+    temp = USARTx->DR;                      // Read the data. This clears the RXNE bit.
     return temp;
 }

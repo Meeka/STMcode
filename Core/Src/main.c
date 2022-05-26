@@ -8,13 +8,13 @@ int main (void) {
 
     while (1) {
         GPIO_Toggle(GPIO_PIN_5, GPIOA);
-        UART2_SendString("On\r\n");
+        UART_SendString("On\r\n", USART2);
         Delay(1000);
         GPIO_Toggle(GPIO_PIN_5, GPIOA);
-        UART2_SendString("Off\r\n");
+        UART_SendString("Off\r\n", USART2);
         Delay(1000);
-        //uint8_t data = UART2_GetChar();
-        //UART2_SendChar(data);
+        //uint8_t data = UART_GetChar(USART2);
+        //UART_SendChar(data, USART2);
     }
 
 }
