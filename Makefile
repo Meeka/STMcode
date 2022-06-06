@@ -42,7 +42,8 @@ startup_stm32f446xx.c \
 Drivers/Src/RccConfig.c \
 Drivers/Src/SysTick.c \
 Drivers/Src/Gpio.c \
-Drivers/Src/Uart.c
+Drivers/Src/Uart.c \
+Core/Src/scheduler.c
 
 # ASM sources
 ASM_SOURCES =
