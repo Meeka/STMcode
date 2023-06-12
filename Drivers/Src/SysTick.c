@@ -24,6 +24,7 @@ uint32_t GetSysTick (void) {
     return TickCount;
 }
 
+//ToDo: change so it doesn't spin cpu
 void Delay (uint32_t delay) {
     uint32_t tickstart = GetSysTick();
     

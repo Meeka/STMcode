@@ -4,14 +4,13 @@
 #include "stm32f446xx.h"
 #include "core_cm4.h"
 
+static volatile uint32_t TickCount;
+
 /***********STEPS***************
  * 1. Program reload value
  * 2. Clear current value
  * 3. Program control and status register
  * *****************************/
-
-static volatile uint32_t TickCount;
-
 void InitSysTick (void);
 void IncSysTick (void);
 uint32_t GetSysTick (void);

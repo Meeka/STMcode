@@ -1,48 +1,87 @@
 #include "scheduler.h"
 
-//Tracks number of tasks to run
-void (*task_list[NUM_OF_TASKS]) (void *p);
+TCB_TypeDef TaskList[NUM_OF_TASKS];
 
-uint8_t task_index;
+uint8_t curr_task;
 
 void scheduler_init(void) {
-    //init array of task pointers
-    task_list[0] = &taskA;
-    task_list[1] = &taskB;
-    task_list[2] = &taskA;
-    task_list[3] = &taskC;
-    task_list[4] = NULL;
+    uint8_t j = 0;
 
-    //init task index for scheduler
-    task_index = 0;
+    TaskList[j].task_pointer = &taskA;
+    TaskList[j].arg_ptr = NULL;
+    TaskList[j].state = STATE_READY;
+    TaskList[j].delay = 0;
+    j++;
+
+    TaskList[j].task_pointer = &taskB;
+    TaskList[j].arg_ptr = NULL;
+    TaskList[j].state = STATE_READY;
+    TaskList[j].delay = 0;
+    j++;
+
+    TaskList[j].task_pointer = &taskC;
+    TaskList[j].arg_ptr = NULL;
+    TaskList[j].state = STATE_READY;
+    TaskList[j].delay = 0;
+    j++;
+
+    TaskList[j].task_pointer = NULL;
 }
 
-void start_task(void (*task_p)()) {
-    task_p();
+void start_task(uint8_t task_id) {
+    TaskList[task_id].state = STATE_READY;
+}
+
+void halt_task(void) {
+    TaskList[curr_task].state = STATE_INACTIVE;
+}
+
+void sleep_task(uint32_t delay) {
+    TaskList[curr_task].delay = delay;
+    TaskList[curr_task].state = STATE_WAITING;
 }
 
 void scheduler(void) {
     //if at end of task list go to start
-    if (task_list[task_index] == NULL && task_index != 0) {
-        task_index = 0;
+    if (TaskList[curr_task].task_pointer == NULL && curr_task != 0) {
+        curr_task = 0;
+        Delay(1);    //1ms delay for now...
     }
     //if no tasks, do nothing
-    if (task_list[task_index] == NULL && task_index == 0) {
+    if (TaskList[curr_task].task_pointer == NULL && curr_task == 0) {
         return;
     }
-    start_task(task_list[task_index]);
-    task_index++;   //round robin for now...
+
+    //if task is delayed, decrement delay value
+    //if delay value is 0, set task to ready state
+    if (TaskList[curr_task].state == STATE_WAITING) {
+        TaskList[curr_task].delay--;
+        if (TaskList[curr_task].delay == 0) {
+            TaskList[curr_task].state = STATE_READY;
+        }
+    }
+
+    //if task is in ready state, run it
+    if (TaskList[curr_task].state == STATE_READY) {
+        TaskList[curr_task].task_pointer();
+        Delay(1);    //1ms delay for now...
+    }
+
+    curr_task++;
     return;
 }
 
-void taskA(void *p) {
+void taskA() {
     GPIO_Toggle(GPIO_PIN_5, GPIOA);
+    sleep_task(1000); //flash LED every 1s
 }
 
-void taskB(void *p) {
+void taskB() {
     UART_SendString("On\r\n", USART2);
+    sleep_task(5000); //flash "On" every 5s
 }
 
-void taskC(void *p) {
+void taskC() {
     UART_SendString("Off\r\n", USART2);
+    sleep_task(10000); //flash "Off" every 10s
 }

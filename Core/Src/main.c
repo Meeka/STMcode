@@ -18,7 +18,7 @@ int main (void) {
         //UART_SendChar(data, USART2);
         
         scheduler();
-        Delay(1000);    //1s delay for now...
+        //Delay(1);    //1ms delay for now...
     }
 
 }
