@@ -38,3 +38,7 @@ void SuspendSysTick (void) {
 void ResumeSysTick (void) {
     SysTick->CTRL |= ~SysTick_CTRL_TICKINT_Msk;
 }
+
+void SysTick_Handler (void) {
+    IncSysTick();
+}

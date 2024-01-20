@@ -17,5 +17,6 @@ uint32_t GetSysTick (void);
 void Delay (uint32_t delay);
 void SuspendSysTick (void);
 void ResumeSysTick (void);
+void SysTick_Handler (void);
 
 #endif
