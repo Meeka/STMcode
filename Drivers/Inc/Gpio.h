@@ -25,27 +25,28 @@ typedef enum {
 } GPIO_PinTypeDef;
 
 typedef enum {
-    GPIO_MODE_INPUT,
-    GPIO_MODE_OUTPUT,
-    GPIO_MODE_ALT
+    GPIO_MODE_INPUT = 0,
+    GPIO_MODE_OUTPUT = 1,
+    GPIO_MODE_ALT = 2,
+    GPIO_MODE_ANALOG = 3
 } GPIO_ModeTypeDef;
 
 typedef enum  {
-    GPIO_TYPE_PUSH_PULL,
-    GPIO_TYPE_OPEN_DRAIN
+    GPIO_TYPE_PUSH_PULL = 0,
+    GPIO_TYPE_OPEN_DRAIN = 1
 } GPIO_OutputTypeDef;
 
 typedef enum {
-    GPIO_PULL_NONE,
-    GPIO_PULL_DOWN,
-    GPIO_PULL_UP
+    GPIO_PULL_NONE = 0,
+    GPIO_PULL_UP = 1,
+    GPIO_PULL_DOWN = 2
 } GPIO_PullTypeDef;
 
 typedef enum {
-    GPIO_SPEED_FREQ_LOW,
-    GPIO_SPEED_FREQ_MED,
-    GPIO_SPEED_FREQ_HIGH,
-    GPIO_SPEED_FREQ_VERY_HIGH
+    GPIO_SPEED_FREQ_LOW = 0,
+    GPIO_SPEED_FREQ_MED = 1,
+    GPIO_SPEED_FREQ_HIGH = 2,
+    GPIO_SPEED_FREQ_VERY_HIGH = 3
 } GPIO_SpeedTypeDef;
 
 typedef enum {
@@ -104,26 +105,19 @@ typedef enum {
 } GPIO_AltFuncTypeDef;
 
 typedef struct {
-    GPIO_PinTypeDef     Pin;       //GPIO Pin
-    GPIO_ModeTypeDef    Mode;      //Operating mode
-    GPIO_OutputTypeDef  OType;     //Output type
-    GPIO_PullTypeDef    Pull;      //Pull-up or Pull-down
-    GPIO_SpeedTypeDef   Speed;     //Speed for pin
-    GPIO_AltFuncTypeDef Alt;       //Peripheral to be connected to pin
-    RCC_Periph_TypeDef  ClkEn;     //Peripheral clock enable in RCC
-    GPIO_TypeDef*       RegOffset; //Register Offset
+    GPIO_PinTypeDef     pin;       //GPIO Pin
+    GPIO_ModeTypeDef    mode;      //Operating mode
+    GPIO_OutputTypeDef  oType;     //Output type
+    GPIO_PullTypeDef    pull;      //Pull-up or Pull-down
+    GPIO_SpeedTypeDef   speed;     //Speed for pin
+    GPIO_AltFuncTypeDef alt;       //Peripheral to be connected to pin
+    RCC_Periph_TypeDef  clkEn;     //Peripheral clock enable in RCC
+    GPIO_TypeDef*       regOffset; //Register Offset
 } GPIO_InitTypeDef;
 
-
-/************STEPS***********
- * 1. Enable GPIO Clock
- * 2. Set pin mode
- * 2a. Set output mode if pin is output
- * 3. Configure speed
- * 4. Configure pull-up or pull-down
- * 5. Configure alternate function
- * *************************/
-void GPIO_Config (GPIO_InitTypeDef* GPIO_Settings);
+void GPIO_Enable (GPIO_InitTypeDef* GPIO_Settings);
+void GPIO_setup_output_af (GPIO_InitTypeDef* GPIO_Settings);
+void GPIO_Config(GPIO_InitTypeDef* GPIO_Settings);
 
 /**********STEPS************
  * 1. Setup User LED on PA5

@@ -1,25 +1,30 @@
 #include "Uart.h"
 
 void UART_Init (void) {
-    UART_InitTypeDef UART_Terminal = {0};
-
-    UART_Terminal.RegOffset = USART2;
-    UART_Terminal.ClkEn.Bus = &RCC->APB1ENR;
-    UART_Terminal.ClkEn.Offset = RCC_APB1ENR_USART2EN;
-    UART_Terminal.USART_Gpio[0].Pin = GPIO_PIN_2;
-    UART_Terminal.USART_Gpio[0].Mode = GPIO_MODE_ALT;
-    UART_Terminal.USART_Gpio[0].Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    UART_Terminal.USART_Gpio[0].Alt = GPIO_AF7_USART2;
-    UART_Terminal.USART_Gpio[0].ClkEn.Bus = &RCC->AHB1ENR;
-    UART_Terminal.USART_Gpio[0].ClkEn.Offset = RCC_AHB1ENR_GPIOAEN;
-    UART_Terminal.USART_Gpio[0].RegOffset = GPIOA;
-    UART_Terminal.USART_Gpio[1].Pin = GPIO_PIN_3;
-    UART_Terminal.USART_Gpio[1].Mode = GPIO_MODE_ALT;
-    UART_Terminal.USART_Gpio[1].Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    UART_Terminal.USART_Gpio[1].Alt = GPIO_AF7_USART2;
-    UART_Terminal.USART_Gpio[1].ClkEn.Bus = &RCC->AHB1ENR;
-    UART_Terminal.USART_Gpio[1].ClkEn.Offset = RCC_AHB1ENR_GPIOAEN;
-    UART_Terminal.USART_Gpio[1].RegOffset = GPIOA;
+    UART_InitTypeDef UART_Terminal = {
+        .RegOffset = USART2,
+        .ClkEn.Bus = &RCC->APB1ENR,
+        .ClkEn.Offset = RCC_APB1ENR_USART2EN,
+        .USART_Gpio[0] = {
+            .pin = GPIO_PIN_2,
+            .mode = GPIO_MODE_ALT,
+            .speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .alt = GPIO_AF7_USART2,
+            .clkEn.Bus = &RCC->AHB1ENR,
+            .clkEn.Offset = RCC_AHB1ENR_GPIOAEN,
+            .regOffset = GPIOA
+        },
+        .USART_Gpio[1] = {
+            .pin = GPIO_PIN_3,
+            .mode = GPIO_MODE_ALT,
+            .speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .alt = GPIO_AF7_USART2,
+            .clkEn.Bus = &RCC->AHB1ENR,
+            .clkEn.Offset = RCC_AHB1ENR_GPIOAEN,
+            .regOffset = GPIOA
+        }
+        
+    };
 
     UART_Config(&UART_Terminal);
 
