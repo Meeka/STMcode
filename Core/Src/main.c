@@ -7,18 +7,14 @@ int main (void) {
     UART_Init();
     scheduler_init();
 
+    uint32_t loop_time = 0;
+
     while (1) {
-        //GPIO_Toggle(GPIO_PIN_5, GPIOA);
-        //UART_SendString("On\r\n", USART2);
-        //Delay(1000);
-        //GPIO_Toggle(GPIO_PIN_5, GPIOA);
-        //UART_SendString("Off\r\n", USART2);
-        //Delay(1000);
-        //uint8_t data = UART_GetChar(USART2);
-        //UART_SendChar(data, USART2);
         
-        scheduler();
-        //Delay(1);    //1ms delay for now...
+        if(GetSysTick() - loop_time > 999) { //1s loop
+            loop_time = GetSysTick();
+            scheduler();
+        }
     }
 
 }

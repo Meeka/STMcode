@@ -16,15 +16,11 @@ void InitSysTick (void) {
     TickCount = 0;
 }
 
-void IncSysTick (void) {
-    TickCount++;
-}
-
 uint32_t GetSysTick (void) {
     return TickCount;
 }
 
-//ToDo: change so it doesn't spin cpu
+//This will spin CPU
 void Delay (uint32_t delay) {
     uint32_t tickstart = GetSysTick();
     
@@ -40,5 +36,5 @@ void ResumeSysTick (void) {
 }
 
 void SysTick_Handler (void) {
-    IncSysTick();
+    TickCount++;
 }

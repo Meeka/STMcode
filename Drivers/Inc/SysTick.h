@@ -12,7 +12,6 @@ static volatile uint32_t TickCount;
  * 3. Program control and status register
  * *****************************/
 void InitSysTick (void);
-void IncSysTick (void);
 uint32_t GetSysTick (void);
 void Delay (uint32_t delay);
 void SuspendSysTick (void);
