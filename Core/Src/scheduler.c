@@ -68,14 +68,15 @@ void scheduler(void) {
 
 void taskA() {
     GPIO_Toggle(GPIO_PIN_5, GPIOA);
+    sleep_task(100); //flash every 1s
 }
 
 void taskB() {
     UART_SendString("5s\r\n", USART2);
-    sleep_task(5); //flash "5s" every 5s
+    sleep_task(500); //flash "5s" every 5s
 }
 
 void taskC() {
     UART_SendString("10s\r\n", USART2);
-    sleep_task(10); //flash "10s" every 10s
+    sleep_task(1000); //flash "10s" every 10s
 }

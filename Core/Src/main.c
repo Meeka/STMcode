@@ -11,7 +11,7 @@ int main (void) {
 
     while (1) {
         
-        if(GetSysTick() - loop_time > 999) { //1s loop
+        if(GetSysTick() - loop_time > 9) { //10ms loop
             loop_time = GetSysTick();
             scheduler();
         }
