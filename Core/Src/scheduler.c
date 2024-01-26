@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "scheduler.h"
 
 TCB_TypeDef TaskList[NUM_OF_TASKS];
@@ -20,6 +21,12 @@ void scheduler_init(void) {
     j++;
 
     TaskList[j].task_pointer = &taskC;
+    TaskList[j].arg_ptr = NULL;
+    TaskList[j].state = STATE_READY;
+    TaskList[j].delay = 0;
+    j++;
+
+    TaskList[j].task_pointer = &taskD;
     TaskList[j].arg_ptr = NULL;
     TaskList[j].state = STATE_READY;
     TaskList[j].delay = 0;
@@ -79,4 +86,12 @@ void taskB() {
 void taskC() {
     UART_SendString("10s\r\n", USART2);
     sleep_task(1000); //flash "10s" every 10s
+}
+
+void taskD() {
+    UART_SendChar( uart_rx_char, USART2);
+    fflush(stdout);
+    if(uart_rx_char == '\r')
+        UART_SendChar ('\n', USART2);
+    uart_rx_char = '\0';
 }

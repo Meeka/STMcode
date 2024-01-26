@@ -1,11 +1,13 @@
 #include "Uart.h"
 
+volatile char uart_rx_char = '\0'; //remove once ring buffer implemented.
+
 void UART_Init (void) {
     UART_InitTypeDef UART_Terminal = {
         .RegOffset = USART2,
         .ClkEn.Bus = &RCC->APB1ENR,
         .ClkEn.Offset = RCC_APB1ENR_USART2EN,
-        .USART_Gpio[0] = {
+        .USART_Gpio[UART_RX] = {
             .pin = GPIO_PIN_2,
             .mode = GPIO_MODE_ALT,
             .speed = GPIO_SPEED_FREQ_VERY_HIGH,
@@ -14,7 +16,7 @@ void UART_Init (void) {
             .clkEn.Offset = RCC_AHB1ENR_GPIOAEN,
             .regOffset = GPIOA
         },
-        .USART_Gpio[1] = {
+        .USART_Gpio[UART_TX] = {
             .pin = GPIO_PIN_3,
             .mode = GPIO_MODE_ALT,
             .speed = GPIO_SPEED_FREQ_VERY_HIGH,
@@ -22,7 +24,11 @@ void UART_Init (void) {
             .clkEn.Bus = &RCC->AHB1ENR,
             .clkEn.Offset = RCC_AHB1ENR_GPIOAEN,
             .regOffset = GPIOA
-        }
+        },
+        .DataBits = DATA_BITS_8,
+        .StopBits = STOP_BIT_1,
+        .Parity = PARITY_DIS,
+        .Interrupt = USART2_IRQn
         
     };
 
@@ -32,26 +38,30 @@ void UART_Init (void) {
 
 void UART_Config (UART_InitTypeDef* USART_Settings) {
 
-    //1. Set up GPIO for USART on PA2 and PA3
-    GPIO_Config(&USART_Settings->USART_Gpio[0]);
-    GPIO_Config(&USART_Settings->USART_Gpio[1]);
+    //GPIO programming
+    GPIO_Config(&USART_Settings->USART_Gpio[UART_RX]);
+    GPIO_Config(&USART_Settings->USART_Gpio[UART_TX]);
 
-    //2. Enable the UART CLOCK
+    //UART Clock
     PeriphClkEnable(USART_Settings->ClkEn);
-    
-    //3. Enable the USART by writing the UE bit in USART_CR1 register to 1.
-    USART_Settings->RegOffset->CR1 = 0x0;               //reset all
-    USART_Settings->RegOffset->CR1 |= USART_CR1_UE;     //UE = 1, enable USART
 
-    //4. Program the M bit in USART_CR1 to define the word length.
-    USART_Settings->RegOffset->CR1 &= ~(USART_CR1_M);  //M=0; 8 bit word length
+    //Enable interrupt
+    NVIC_SetPriorityGrouping(0);
+    uint32_t uart_priority_encoding = NVIC_EncodePriority(0, 1, 0);
+    NVIC_SetPriority (USART_Settings->Interrupt, uart_priority_encoding);
+    NVIC_EnableIRQ (USART_Settings->Interrupt);
 
-    //5. Select the desired baud rate using the USART_BRR register.
-    USART_Settings->RegOffset->BRR = (7<<0) | (24<<4); //Baud rate of 115200, PCLK1 at 45Mhz
+    //Additional USART settings
+    USART_Settings->RegOffset->CR1 &= ~(USART_CR1_M_Msk);
+    USART_Settings->RegOffset->CR2 &= ~(USART_CR2_STOP_Msk & USART_CR2_CPOL_Msk);
+    USART_Settings->RegOffset->CR1 |= USART_Settings->DataBits;
+    USART_Settings->RegOffset->CR2 |= USART_Settings->StopBits;
+    USART_Settings->RegOffset->CR2 |= USART_Settings->Parity;
+    USART_Settings->RegOffset->BRR = (7<<0) | (24<<4);
 
-    //6. Enable the Transmitter/Receiver by setting the TE and RE bits in USART_CR1 register.
-    USART_Settings->RegOffset->CR1 |= USART_CR1_RE;    //RE=1 Enable RX
-    USART_Settings->RegOffset->CR1 |= USART_CR1_TE;    //TE=1 Enable TX
+    //Enable USART
+    USART_Settings->RegOffset->CR1 |= (USART_CR1_RE | USART_CR1_TE | USART_CR1_RXNEIE | USART_CR1_UE);    //RE=1 Enable RX
+
 }
 
 void UART_SendChar (uint8_t c, USART_TypeDef* USARTx) {
@@ -72,4 +82,30 @@ uint8_t UART_GetChar (USART_TypeDef* USARTx) {
     while (!(USARTx->SR & USART_SR_RXNE)); //wait for RXNE bit to set
     temp = USARTx->DR;                      // Read the data. This clears the RXNE bit.
     return temp;
+}
+
+/*void UART_RingBufWrite (UART_RingbufTypedef* ring_buffer, char* x){
+    ring_buffer->buffer[ring_buffer->tail] = x;
+    if((ring_buffer->tail + 1) >= ring_buffer->len)
+        ring_buffer->tail = 0;
+    else 
+        ring_buffer->tail = ring_buffer->tail++;
+}*/
+
+/*static inline char UART_RingBufRead (UART_RingbufTypedef* buffer){
+    if (buffer->head == buffer->tail)
+        return 0;
+    char read = buffer->buffer[buffer->head];
+    buffer->head = (buffer->head < (buffer->len - 1)) ? (buffer->head + 1) : 0;
+    return read;
+}*/
+
+void USART2_IRQHandler (void) {
+    if (USART2->SR & USART_SR_RXNE) {
+        uart_rx_char = USART2->DR;
+        /*char c = USART2->DR;
+        UART_RingBufWrite(&buffer, c);
+        if( c == '\r')
+            newline  = 1;*/
+    }
 }

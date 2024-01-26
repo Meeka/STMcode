@@ -4,42 +4,69 @@
 #include "stm32f446xx.h"
 #include "Gpio.h"
 #include "RccConfig.h"
+#include "core_cm4.h"
+
+#define RINGBUF_SIZE (128)
+
+//static volatile char ring_buffer_storeage[ RINGBUF_SIZE + 1];
+//static volatile int newline = 0;
+extern volatile char uart_rx_char; //remove once ring buffer implemented.
+
+/*typedef struct {
+    int len;
+    volatile char* buffer;
+    volatile int head;
+    volatile int tail;
+} UART_RingbufTypedef;*/
+
+//ToDo: Find a better place for this...
+/*UART_RingbufTypedef buffer = {
+    .len = RINGBUF_SIZE,
+    .buffer = ring_buffer_storeage,
+    .head = 0,
+    .tail = 0
+};*/
+
+enum UART_Pinout{
+    UART_RX = 0,
+    UART_TX = 1,
+    UART_PINOUT
+};
+
+typedef enum {
+    DATA_BITS_8 = 0,
+    DATA_BITS_9 = 1
+} UART_DataBitsTypedef;
+
+typedef enum {
+    STOP_BIT_1 = 0,
+    STOP_BIT_0_5 = 1,
+    STOP_BIT_2 = 2,
+    STOP_BIT_1_5 = 3
+} UART_StopBitsTypedef;
+
+typedef enum {
+    PARITY_DIS = 0,
+    PARITY_EN = 1
+} UART_ParityTypedef;
 
 typedef struct {
-    GPIO_InitTypeDef USART_Gpio[2];
+    GPIO_InitTypeDef USART_Gpio[UART_PINOUT];
     RCC_Periph_TypeDef ClkEn;
     USART_TypeDef* RegOffset;
+    UART_DataBitsTypedef DataBits;
+    UART_StopBitsTypedef StopBits;
+    UART_ParityTypedef Parity;
+    IRQn_Type Interrupt;
 } UART_InitTypeDef;
 
-
-/*********STEPS***********
- * 1. Enable the UART CLOCK
- * 2. Enable the USART by writing the UE bit in USART_CR1 register to 1.
- * 3. Program the M bit in USART_CR1 to define the word length.
- * 4. Select the desired baud rate using the USART_BRR register.
- * 5. Enable the Transmitter/Receiver by setting the TE and RE bits in USART_CR1 register.
- * ***********************/
+//void UART_RingBufWrite (UART_RingbufTypedef* ring_buffer, char* x);
+//static inline char UART_RingBufRead (UART_RingbufTypedef* buffer);
 void UART_Config (UART_InitTypeDef* USART_Settings);
-
-/**************STEPS**************
- * 1. Write the data to send in the USART_DR register (this clears the TXE bit). Repeat this
- *    for each data to be transmitted in case of single buffer.
- * 2. After writing the last data into the USART_DR reigster, wait until TC=1. This indicates
- *    That the transmission of t he last frame is complete. This is required for instance when 
- *    the USART is disabled or enters the Halt mode to avoid corrupting the last transmission.
- * *******************************/
 void UART_SendChar (uint8_t c, USART_TypeDef* USARTx);
 void UART_SendString (char* string, USART_TypeDef* USARTx);
-
-/***************STEPS**************
- * 1. Wait for the RXNE bit to set. It indicates that the data has been received and can be read.
- * 2. Read the data from USART_DR register. This also clears the RXNE bit
- * ********************************/
 uint8_t UART_GetChar (USART_TypeDef* USARTx);
 
-/************STEPS************
- * 1. Setup terminal on USART2
- * ***************************/
 void UART_Init(void);
 
 #endif

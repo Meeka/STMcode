@@ -32,5 +32,6 @@ void scheduler_init(void);
 void taskA();
 void taskB();
 void taskC();
+void taskD();
 
 #endif
