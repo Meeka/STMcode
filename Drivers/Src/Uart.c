@@ -1,7 +1,5 @@
 #include "Uart.h"
 
-volatile char uart_rx_char = '\0'; //remove once ring buffer implemented.
-
 void UART_Init (void) {
     UART_InitTypeDef UART_Terminal = {
         .RegOffset = USART2,
@@ -76,36 +74,38 @@ void UART_SendString (char* string, USART_TypeDef* USARTx) {
     }
 }
 
-//ToDo: Improve to remove polling
-uint8_t UART_GetChar (USART_TypeDef* USARTx) {
-    uint8_t temp;
-    while (!(USARTx->SR & USART_SR_RXNE)); //wait for RXNE bit to set
-    temp = USARTx->DR;                      // Read the data. This clears the RXNE bit.
-    return temp;
+static volatile UART_RingbufTypedef UART_read_buffer = {
+    .len = RINGBUF_SIZE,
+    .buffer = ring_buffer_storeage,
+    .head = 0,
+    .tail = 0
+};
+
+void UART_RingBufWrite (char x){
+    UART_read_buffer.buffer[UART_read_buffer.tail] = x;
+    if((UART_read_buffer.tail + 1) >= UART_read_buffer.len)
+        UART_read_buffer.tail = 0;
+    else 
+        UART_read_buffer.tail++;
 }
 
-/*void UART_RingBufWrite (UART_RingbufTypedef* ring_buffer, char* x){
-    ring_buffer->buffer[ring_buffer->tail] = x;
-    if((ring_buffer->tail + 1) >= ring_buffer->len)
-        ring_buffer->tail = 0;
-    else 
-        ring_buffer->tail = ring_buffer->tail++;
-}*/
-
-/*static inline char UART_RingBufRead (UART_RingbufTypedef* buffer){
-    if (buffer->head == buffer->tail)
+char UART_RingBufRead (void){
+    if (UART_read_buffer.head == UART_read_buffer.tail)
         return 0;
-    char read = buffer->buffer[buffer->head];
-    buffer->head = (buffer->head < (buffer->len - 1)) ? (buffer->head + 1) : 0;
+    char read = UART_read_buffer.buffer[UART_read_buffer.head];
+    UART_read_buffer.head = (UART_read_buffer.head < (UART_read_buffer.len - 1)) ? (UART_read_buffer.head + 1) : 0;
     return read;
-}*/
+}
 
 void USART2_IRQHandler (void) {
-    if (USART2->SR & USART_SR_RXNE) {
-        uart_rx_char = USART2->DR;
-        /*char c = USART2->DR;
-        UART_RingBufWrite(&buffer, c);
+    if (USART2->SR & USART_SR_RXNE_Msk) {
+        char c = USART2->DR;
+        UART_RingBufWrite(c);
         if( c == '\r')
-            newline  = 1;*/
+            UART_RingBufWrite('\n');
     }
+}
+
+bool UART_IsBufferEmpty(void) {
+    return (UART_read_buffer.head == UART_read_buffer.tail);
 }

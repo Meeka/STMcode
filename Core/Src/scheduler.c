@@ -56,7 +56,6 @@ void scheduler(void) {
         }
 
         //if task is delayed, decrement delay value
-        //if delay value is 0, set task to ready state
         if (TaskList[curr_task].state == STATE_WAITING) {
             TaskList[curr_task].delay--;
             if (TaskList[curr_task].delay == 0) {
@@ -89,9 +88,5 @@ void taskC() {
 }
 
 void taskD() {
-    UART_SendChar( uart_rx_char, USART2);
-    fflush(stdout);
-    if(uart_rx_char == '\r')
-        UART_SendChar ('\n', USART2);
-    uart_rx_char = '\0';
+
 }

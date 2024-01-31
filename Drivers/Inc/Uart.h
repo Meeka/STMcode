@@ -5,27 +5,20 @@
 #include "Gpio.h"
 #include "RccConfig.h"
 #include "core_cm4.h"
+#include <stdbool.h>
 
 #define RINGBUF_SIZE (128)
 
-//static volatile char ring_buffer_storeage[ RINGBUF_SIZE + 1];
-//static volatile int newline = 0;
-extern volatile char uart_rx_char; //remove once ring buffer implemented.
+static volatile char ring_buffer_storeage[ RINGBUF_SIZE + 1];
 
-/*typedef struct {
+typedef struct {
     int len;
     volatile char* buffer;
     volatile int head;
     volatile int tail;
-} UART_RingbufTypedef;*/
+} UART_RingbufTypedef;
 
-//ToDo: Find a better place for this...
-/*UART_RingbufTypedef buffer = {
-    .len = RINGBUF_SIZE,
-    .buffer = ring_buffer_storeage,
-    .head = 0,
-    .tail = 0
-};*/
+static volatile UART_RingbufTypedef UART_read_buffer;
 
 enum UART_Pinout{
     UART_RX = 0,
@@ -60,13 +53,12 @@ typedef struct {
     IRQn_Type Interrupt;
 } UART_InitTypeDef;
 
-//void UART_RingBufWrite (UART_RingbufTypedef* ring_buffer, char* x);
-//static inline char UART_RingBufRead (UART_RingbufTypedef* buffer);
+void UART_RingBufWrite (char x);
+char UART_RingBufRead (void);
 void UART_Config (UART_InitTypeDef* USART_Settings);
 void UART_SendChar (uint8_t c, USART_TypeDef* USARTx);
 void UART_SendString (char* string, USART_TypeDef* USARTx);
-uint8_t UART_GetChar (USART_TypeDef* USARTx);
-
+bool UART_IsBufferEmpty(void);
 void UART_Init(void);
 
 #endif
