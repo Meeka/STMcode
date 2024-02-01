@@ -62,14 +62,10 @@ void UART_Config (UART_InitTypeDef* USART_Settings) {
 
 }
 
-void UART_SendChar (uint8_t c, USART_TypeDef* USARTx) {
-    USARTx->DR = c;     //Load data into DR register
-    while (!(USARTx->SR & USART_SR_TC));    //wait for TC to set... This indicates that the data has been transmitted
-}
-
-void UART_SendString (char* string, USART_TypeDef* USARTx) {
-    while (*string != '\0') {
-        UART_SendChar(*string, USARTx);
+void UART_SendString (char* string, USART_TypeDef* USARTx, int size) {
+    for (int i = 0; i < size; i++) {
+        USARTx->DR = *string;
+        while (!(USARTx->SR & USART_SR_TXE_Msk));
         string++;
     }
 }
@@ -108,4 +104,12 @@ void USART2_IRQHandler (void) {
 
 bool UART_IsBufferEmpty(void) {
     return (UART_read_buffer.head == UART_read_buffer.tail);
+}
+
+//Implements printf()
+int _write (int handle, char* data, int size) {
+    UNUSED(handle);
+
+    UART_SendString(data, USART2, size);
+    return size;
 }

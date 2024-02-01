@@ -78,12 +78,12 @@ void taskA() {
 }
 
 void taskB() {
-    UART_SendString("5s\r\n", USART2);
+    printf("%ds\r\n", 5);
     sleep_task(500); //flash "5s" every 5s
 }
 
 void taskC() {
-    UART_SendString("10s\r\n", USART2);
+    printf("%ds\r\n", 10);
     sleep_task(1000); //flash "10s" every 10s
 }
 

@@ -8,6 +8,7 @@
 #include <stdbool.h>
 
 #define RINGBUF_SIZE (128)
+#define UNUSED(x) (void)(x); //Macro for unused parameter in overridden _write function.
 
 static volatile char ring_buffer_storeage[ RINGBUF_SIZE + 1];
 
@@ -56,9 +57,9 @@ typedef struct {
 void UART_RingBufWrite (char x);
 char UART_RingBufRead (void);
 void UART_Config (UART_InitTypeDef* USART_Settings);
-void UART_SendChar (uint8_t c, USART_TypeDef* USARTx);
-void UART_SendString (char* string, USART_TypeDef* USARTx);
+void UART_SendString (char* string, USART_TypeDef* USARTx, int size);
 bool UART_IsBufferEmpty(void);
 void UART_Init(void);
+int _write (int handle, char* data, int size);
 
 #endif
