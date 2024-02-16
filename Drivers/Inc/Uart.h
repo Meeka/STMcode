@@ -57,6 +57,7 @@ typedef struct {
 void UART_RingBufWrite (char x);
 char UART_RingBufRead (void);
 void UART_Config (UART_InitTypeDef* USART_Settings);
+void UART_SendChar (uint8_t c, USART_TypeDef* USARTx);
 void UART_SendString (char* string, USART_TypeDef* USARTx, int size);
 bool UART_IsBufferEmpty(void);
 void UART_Init(void);

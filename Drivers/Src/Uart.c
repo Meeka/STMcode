@@ -62,6 +62,11 @@ void UART_Config (UART_InitTypeDef* USART_Settings) {
 
 }
 
+void UART_SendChar (uint8_t c, USART_TypeDef* USARTx) {
+    USARTx->DR = c;     //Load data into DR register
+    while (!(USARTx->SR & USART_SR_TC));    //wait for TC to set... This indicates that the data has been transmitted
+}
+
 void UART_SendString (char* string, USART_TypeDef* USARTx, int size) {
     for (int i = 0; i < size; i++) {
         USARTx->DR = *string;
