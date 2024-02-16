@@ -35,20 +35,18 @@ BUILD_DIR = build
 # source
 ######################################
 # C sources
-C_SOURCES =  \
-core/src/main.c \
-core/src/system_stm32f4xx.c \
-startup_stm32f446xx.c \
-drivers/src/rccConfig.c \
-drivers/src/sysTick.c \
-drivers/src/gpio.c \
-drivers/src/uart.c \
-core/src/scheduler.c
+SRC_DIRS =  \
+core/src \
+drivers/src
+
+C_SOURCES = $(wildcard $(addsuffix /*.c,$(SRC_DIRS))) \
+startup_stm32f446xx.c
 
 # ASM sources
 ASM_SOURCES =
 
-
+#prints source files if needed for debugging.
+#$(info C_SOURCES: $(C_SOURCES))
 
 
 #######################################
@@ -116,8 +114,11 @@ endif
 
 
 # Generate dependency information
+DEPS = $(OBJECTS:.o=.d)
+
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
+-include $(DEPS)
 
 #######################################
 # LDFLAGS
