@@ -1,4 +1,4 @@
-#include "RccConfig.h"
+#include "rccConfig.h"
 
 static volatile uint32_t HCLK_Freq;
 

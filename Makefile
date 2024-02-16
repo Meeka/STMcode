@@ -36,14 +36,14 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Core/Src/main.c \
-Core/Src/system_stm32f4xx.c \
+core/src/main.c \
+core/src/system_stm32f4xx.c \
 startup_stm32f446xx.c \
-Drivers/Src/RccConfig.c \
-Drivers/Src/SysTick.c \
-Drivers/Src/Gpio.c \
-Drivers/Src/Uart.c \
-Core/Src/scheduler.c
+drivers/src/rccConfig.c \
+drivers/src/sysTick.c \
+drivers/src/gpio.c \
+drivers/src/uart.c \
+core/src/scheduler.c
 
 # ASM sources
 ASM_SOURCES =
@@ -100,9 +100,9 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--ICore/Inc \
--IDrivers/Inc \
--IRegisters/
+-Icore/inc \
+-Idrivers/inc \
+-Iregisters/
 
 
 # compile gcc flags

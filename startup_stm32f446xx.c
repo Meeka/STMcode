@@ -1,7 +1,7 @@
 #include "stdint.h"
 #include "system_stm32f4xx.h"
 #include "stm32f4xx.h"
-#include "Registers/cmsis_gcc.h"
+#include "cmsis_gcc.h"
 
 // Constants from linker
 extern uint32_t _sidata;    // Start of init data

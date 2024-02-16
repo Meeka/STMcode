@@ -2,8 +2,8 @@
 #define __UART_H
 
 #include "stm32f446xx.h"
-#include "Gpio.h"
-#include "RccConfig.h"
+#include "gpio.h"
+#include "rccConfig.h"
 #include "core_cm4.h"
 #include <stdbool.h>
 

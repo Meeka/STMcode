@@ -2,7 +2,7 @@
 #define __GPIO_H
 
 #include "stm32f446xx.h"
-#include "RccConfig.h"
+#include "rccConfig.h"
 
 typedef enum {
     GPIO_PIN_0,

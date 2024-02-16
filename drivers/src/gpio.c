@@ -1,4 +1,4 @@
-#include "Gpio.h"
+#include "gpio.h"
 
 void GPIO_Enable (GPIO_InitTypeDef* GPIO_Settings) {
     //Enable clock

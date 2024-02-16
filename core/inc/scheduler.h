@@ -2,9 +2,9 @@
 #define __SCHEDULER_H
 
 #include <stddef.h>
-#include "SysTick.h"
-#include "Gpio.h"
-#include "Uart.h"
+#include "sysTick.h"
+#include "gpio.h"
+#include "uart.h"
 
 #define NUM_OF_TASKS    5
 

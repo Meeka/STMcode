@@ -1,4 +1,4 @@
-#include "SysTick.h"
+#include "sysTick.h"
 
 static volatile uint32_t TickCount;
 

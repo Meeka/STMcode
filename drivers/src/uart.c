@@ -1,4 +1,4 @@
-#include "Uart.h"
+#include "uart.h"
 
 void UART_Init (void) {
     UART_InitTypeDef UART_Terminal = {
