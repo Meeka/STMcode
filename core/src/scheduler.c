@@ -1,92 +1,122 @@
-#include <stdio.h>
 #include "scheduler.h"
 
-TCB_TypeDef TaskList[NUM_OF_TASKS];
+void scheduler_init(Node_t** head) {
+    
+    static Task_t ledBlink = {
+        .taskPointer = &taskA,
+        .state = STATE_READY,
+        .delay = 0
+    };
 
-static uint8_t curr_task;
+    static Task_t timer_5s = {
+        .taskPointer = &taskB,
+        .state = STATE_READY,
+        .delay = 0
+    };
 
-void scheduler_init(void) {
-    uint8_t j = 0;
+    static Task_t timer_10s = {
+        .taskPointer = &taskC,
+        .state = STATE_READY,
+        .delay = 0
+    };
 
-    TaskList[j].task_pointer = &taskA;
-    TaskList[j].arg_ptr = NULL;
-    TaskList[j].state = STATE_READY;
-    TaskList[j].delay = 0;
-    j++;
-
-    TaskList[j].task_pointer = &taskB;
-    TaskList[j].arg_ptr = NULL;
-    TaskList[j].state = STATE_READY;
-    TaskList[j].delay = 0;
-    j++;
-
-    TaskList[j].task_pointer = &taskC;
-    TaskList[j].arg_ptr = NULL;
-    TaskList[j].state = STATE_READY;
-    TaskList[j].delay = 0;
-    j++;
-
-    TaskList[j].task_pointer = &taskD;
-    TaskList[j].arg_ptr = NULL;
-    TaskList[j].state = STATE_READY;
-    TaskList[j].delay = 0;
-    j++;
-
-    TaskList[j].task_pointer = NULL;
+    insert_task(head, &ledBlink);
+    insert_task(head, &timer_5s);
+    insert_task(head, &timer_10s);
 }
 
-void start_task(uint8_t task_id) {
-    TaskList[task_id].state = STATE_READY;
+void start_task(Task_t** task) {
+    (*task)->state = STATE_READY;
 }
 
-void halt_task(void) {
-    TaskList[curr_task].state = STATE_INACTIVE;
+void halt_task(Task_t** task) {
+    (*task)->state = STATE_INACTIVE;
 }
 
-void sleep_task(uint32_t delay) {
-    TaskList[curr_task].delay = delay;
-    TaskList[curr_task].state = STATE_WAITING;
+void sleep_task(Task_t** task, uint32_t delay) {
+    (*task)->delay = delay;
+    (*task)->state = STATE_WAITING;
 }
 
-void scheduler(void) {
-    for(curr_task = 0; curr_task < NUM_OF_TASKS; curr_task++) {
-        //if no tasks, return
-        if (TaskList[curr_task].task_pointer == NULL) {
-            return;
-        }
+void scheduler(Node_t** head) {
+    Node_t* current = *head;
+    
+    while(current != NULL) {
 
         //if task is delayed, decrement delay value
-        if (TaskList[curr_task].state == STATE_WAITING) {
-            TaskList[curr_task].delay--;
-            if (TaskList[curr_task].delay == 0) {
-                TaskList[curr_task].state = STATE_READY;
+        if(current->task->state == STATE_WAITING) {
+            current->task->delay--;
+
+            if (current->task->delay == 0) {
+                current->task->state = STATE_READY;
             }
         }
 
         //if task is in ready state, run it
-        if (TaskList[curr_task].state == STATE_READY) {
-            TaskList[curr_task].task_pointer();
+        if(current->task->state == STATE_READY) {
+            current->task->taskPointer(current->task);
         }
+
+        current = current->next;
     }
-    
+
     return;
 }
 
-void taskA() {
+void taskA(Task_t* currentTask) {
     GPIO_Toggle(GPIO_PIN_5, GPIOA);
-    sleep_task(100); //flash every 1s
+    sleep_task(&currentTask, 100); //flash every 1s
 }
 
-void taskB() {
-    printf("%ds\r\n", 5);
-    sleep_task(500); //flash "5s" every 5s
+void taskB(Task_t* currentTask) {
+    sleep_task(&currentTask, 500); //flash "5s" every 5s
+    printf("5s\r\n");
 }
 
-void taskC() {
-    printf("%ds\r\n", 10);
-    sleep_task(1000); //flash "10s" every 10s
+void taskC(Task_t* currentTask) {
+    sleep_task(&currentTask, 1000); //flash "10s" every 10s
+    printf("10s\r\n");
 }
 
-void taskD() {
+void insert_task (Node_t** head, Task_t* task) {
 
+    Node_t* new_node = (Node_t*)malloc(sizeof(Node_t));
+    if(new_node == NULL)
+        while(1);
+
+    new_node->next = *head;
+    new_node->task = task;
+
+    *head =  new_node;
+}
+
+void remove_task (Node_t** head, Task_t* task) {
+    if (head == NULL) {
+        printf("Task list empty\n");
+        return;
+    }
+
+    //handles case where the task to remove is at the head
+    if ((*head)->task == task) {
+        Node_t* temp = *head;
+        *head = (*head)->next;
+        free(temp);
+        return;
+    }
+
+    Node_t* temp = *head;
+    Node_t* prev = NULL;
+
+    while (temp != NULL && temp->task != task) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Task not found\n");
+        return;
+    }
+
+    prev->next = temp->next;
+    free(temp);
 }
