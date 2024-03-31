@@ -11,7 +11,6 @@
 //Task Control Blocks
 typedef struct Task {
     void (*taskPointer)(struct Task*);  //function pointer to task
-    //void *argPtr;                  //argument pointer
     uint8_t state;                  //task state
     uint32_t delay;                 //task sleep delay
 } Task_t;

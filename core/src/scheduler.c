@@ -2,27 +2,25 @@
 
 void scheduler_init(Node_t** head) {
     
-    static Task_t ledBlink = {
-        .taskPointer = &taskA,
-        .state = STATE_READY,
-        .delay = 0
-    };
+    Task_t* ledBlink = (Task_t*)malloc(sizeof(Task_t));
+    Task_t* timer_5s = (Task_t*)malloc(sizeof(Task_t));
+    Task_t* timer_10s = (Task_t*)malloc(sizeof(Task_t));
 
-    static Task_t timer_5s = {
-        .taskPointer = &taskB,
-        .state = STATE_READY,
-        .delay = 0
-    };
+    ledBlink->taskPointer = &taskA;
+    ledBlink->state = STATE_READY;
+    ledBlink->delay = 0;
 
-    static Task_t timer_10s = {
-        .taskPointer = &taskC,
-        .state = STATE_READY,
-        .delay = 0
-    };
+    timer_5s->taskPointer = &taskB;
+    timer_5s->state = STATE_READY;
+    timer_5s->delay = 0;
 
-    insert_task(head, &ledBlink);
-    insert_task(head, &timer_5s);
-    insert_task(head, &timer_10s);
+    timer_10s->taskPointer = &taskC;
+    timer_10s->state = STATE_READY;
+    timer_10s->delay = 0;
+
+    insert_task(head, ledBlink);
+    insert_task(head, timer_5s);
+    insert_task(head, timer_10s);
 }
 
 void start_task(Task_t** task) {
@@ -100,6 +98,7 @@ void remove_task (Node_t** head, Task_t* task) {
     if ((*head)->task == task) {
         Node_t* temp = *head;
         *head = (*head)->next;
+        free(temp->task);
         free(temp);
         return;
     }
@@ -118,5 +117,6 @@ void remove_task (Node_t** head, Task_t* task) {
     }
 
     prev->next = temp->next;
+    free(temp->task);
     free(temp);
 }
