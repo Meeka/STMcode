@@ -101,11 +101,13 @@ char UART_RingBufRead (void){
 void USART2_IRQHandler (void) {
     if (USART2->SR & USART_SR_RXNE_Msk) {
         char c = USART2->DR;
-        if ( c == '\r')
+        if (c == '\r')
             c = '\n';
         UART_RingBufWrite(c);
-        //if( c == '\r')
-        //    UART_RingBufWrite('\n');
+        if (c == '\b') {
+            UART_RingBufWrite(' ');
+            UART_RingBufWrite('\b');
+        }
     }
 }
 
