@@ -3,37 +3,24 @@
 void scheduler_init(Node_t** head) {
     
     Task_t* ledBlink = (Task_t*)malloc(sizeof(Task_t));
-    Task_t* timer_5s = (Task_t*)malloc(sizeof(Task_t));
-    Task_t* timer_10s = (Task_t*)malloc(sizeof(Task_t));
+    Task_t* timer5s = (Task_t*)malloc(sizeof(Task_t));
+    Task_t* timer10s = (Task_t*)malloc(sizeof(Task_t));
 
-    ledBlink->taskPointer = &taskA;
+    ledBlink->taskPointer = led_blink;
     ledBlink->state = STATE_READY;
     ledBlink->delay = 0;
 
-    timer_5s->taskPointer = &taskB;
-    timer_5s->state = STATE_READY;
-    timer_5s->delay = 0;
+    timer5s->taskPointer = timer_5s;
+    timer5s->state = STATE_READY;
+    timer5s->delay = 0;
 
-    timer_10s->taskPointer = &taskC;
-    timer_10s->state = STATE_READY;
-    timer_10s->delay = 0;
+    timer10s->taskPointer = &timer_10s;
+    timer10s->state = STATE_READY;
+    timer10s->delay = 0;
 
     insert_task(head, ledBlink);
-    insert_task(head, timer_5s);
-    insert_task(head, timer_10s);
-}
-
-void start_task(Task_t** task) {
-    (*task)->state = STATE_READY;
-}
-
-void halt_task(Task_t** task) {
-    (*task)->state = STATE_INACTIVE;
-}
-
-void sleep_task(Task_t** task, uint32_t delay) {
-    (*task)->delay = delay;
-    (*task)->state = STATE_WAITING;
+    insert_task(head, timer5s);
+    insert_task(head, timer10s);
 }
 
 void scheduler(Node_t** head) {
@@ -52,28 +39,13 @@ void scheduler(Node_t** head) {
 
         //if task is in ready state, run it
         if(current->task->state == STATE_READY) {
-            current->task->taskPointer(current->task);
+            current->task->taskPointer(&(current->task->state), &(current->task->delay));
         }
 
         current = current->next;
     }
 
     return;
-}
-
-void taskA(Task_t* currentTask) {
-    GPIO_Toggle(GPIO_PIN_5, GPIOA);
-    sleep_task(&currentTask, 100); //flash every 1s
-}
-
-void taskB(Task_t* currentTask) {
-    sleep_task(&currentTask, 500); //flash "5s" every 5s
-    printf("5s\r\n");
-}
-
-void taskC(Task_t* currentTask) {
-    sleep_task(&currentTask, 1000); //flash "10s" every 10s
-    printf("10s\r\n");
 }
 
 void insert_task (Node_t** head, Task_t* task) {
