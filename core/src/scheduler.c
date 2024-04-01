@@ -4,7 +4,7 @@ void scheduler_init(Node_t** head) {
     
     Task_t* ledBlink = (Task_t*)malloc(sizeof(Task_t));
     Task_t* timer5s = (Task_t*)malloc(sizeof(Task_t));
-    Task_t* timer10s = (Task_t*)malloc(sizeof(Task_t));
+    Task_t* writeUart = (Task_t*)malloc(sizeof(Task_t));
 
     ledBlink->taskPointer = led_blink;
     ledBlink->state = STATE_READY;
@@ -14,13 +14,13 @@ void scheduler_init(Node_t** head) {
     timer5s->state = STATE_READY;
     timer5s->delay = 0;
 
-    timer10s->taskPointer = &timer_10s;
-    timer10s->state = STATE_READY;
-    timer10s->delay = 0;
+    writeUart->taskPointer = write_uart;
+    writeUart->state = STATE_READY;
+    writeUart->delay = 0;
 
     insert_task(head, ledBlink);
     insert_task(head, timer5s);
-    insert_task(head, timer10s);
+    insert_task(head, writeUart);
 }
 
 void scheduler(Node_t** head) {

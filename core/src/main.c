@@ -17,9 +17,6 @@ int main (void) {
         if(GetSysTick() - loopTime > 9) { //10ms loop
             loopTime = GetSysTick();
             scheduler(&taskHead);
-            while (!UART_IsBufferEmpty()) {
-                UART_SendChar(UART_RingBufRead(), USART2);
-            }
         }
     }
 

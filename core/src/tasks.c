@@ -10,9 +10,13 @@ void timer_5s(uint8_t* taskState, uint32_t* taskDelay) {
     printf("5s\r\n");
 }
 
-void timer_10s(uint8_t* taskState, uint32_t* taskDelay) {
-    sleep_task(taskDelay, taskState, 1000); //flash "10s" every 10s
-    printf("10s\r\n");
+void write_uart(uint8_t* taskState, uint32_t* taskDelay) {
+    UNUSED(taskState);
+    UNUSED(taskDelay);
+
+    while (!UART_IsBufferEmpty()) {
+        UART_SendChar(UART_RingBufRead(), USART2);
+    }
 }
 
 void start_task(uint8_t* taskState) {
