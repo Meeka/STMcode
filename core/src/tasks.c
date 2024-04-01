@@ -7,7 +7,7 @@ void led_blink(uint8_t* taskState, uint32_t* taskDelay) {
 
 void timer_5s(uint8_t* taskState, uint32_t* taskDelay) {
     sleep_task(taskDelay, taskState, 500); //flash "5s" every 5s
-    printf("5s\r\n");
+    printf("5s\n");
 }
 
 void write_uart(uint8_t* taskState, uint32_t* taskDelay) {
