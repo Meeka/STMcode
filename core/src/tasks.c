@@ -14,8 +14,8 @@ void write_uart(uint8_t* taskState, uint32_t* taskDelay) {
     UNUSED(taskState);
     UNUSED(taskDelay);
 
-    while (!UART_IsBufferEmpty()) {
-        UART_SendChar(UART_RingBufRead(), USART2);
+    while (!uart_is_buffer_empty()) {
+        uart_send_char(uart_ring_buf_read(), USART2);
     }
 }
 

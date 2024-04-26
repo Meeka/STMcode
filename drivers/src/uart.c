@@ -1,7 +1,7 @@
 #include "uart.h"
 
-void UART_Init (void) {
-    UART_InitTypeDef UART_Terminal = {
+void uart_init (void) {
+    UART_Init_t UART_Terminal = {
         .RegOffset = USART2,
         .ClkEn.Bus = &RCC->APB1ENR,
         .ClkEn.Offset = RCC_APB1ENR_USART2EN,
@@ -30,11 +30,17 @@ void UART_Init (void) {
         
     };
 
-    UART_Config(&UART_Terminal);
+    uart_config(&UART_Terminal);
 
+    //create ring buffer to capture keystrokes from ISR
+    static volatile char ringBuffer[RINGBUF_SIZE + 1];
+    uartRingBuff.len = RINGBUF_SIZE;
+    uartRingBuff.buffer = ringBuffer;
+    uartRingBuff.head = 0;
+    uartRingBuff.tail = 0;
 }
 
-void UART_Config (UART_InitTypeDef* USART_Settings) {
+void uart_config (UART_Init_t* USART_Settings) {
 
     //GPIO programming
     GPIO_Config(&USART_Settings->USART_Gpio[UART_RX]);
@@ -62,39 +68,31 @@ void UART_Config (UART_InitTypeDef* USART_Settings) {
 
 }
 
-void UART_SendChar (uint8_t c, USART_TypeDef* USARTx) {
+void uart_send_char (uint8_t c, USART_TypeDef* USARTx) {
     USARTx->DR = c;     //Load data into DR register
     while (!(USARTx->SR & USART_SR_TC));    //wait for TC to set... This indicates that the data has been transmitted
 }
 
-void UART_SendString (char* string, USART_TypeDef* USARTx, int size) {
+void uart_send_string (char* string, USART_TypeDef* USARTx, int size) {
     for (int i = 0; i < size; i++) {
-        USARTx->DR = *string;
-        while (!(USARTx->SR & USART_SR_TXE_Msk));
+        uart_send_char(*string, USARTx);
         string++;
     }
 }
 
-static volatile UART_RingbufTypedef UART_read_buffer = {
-    .len = RINGBUF_SIZE,
-    .buffer = ring_buffer_storeage,
-    .head = 0,
-    .tail = 0
-};
-
-void UART_RingBufWrite (char x){
-    UART_read_buffer.buffer[UART_read_buffer.tail] = x;
-    if((UART_read_buffer.tail + 1) >= UART_read_buffer.len)
-        UART_read_buffer.tail = 0;
+void uart_ring_buf_write (char x){
+    uartRingBuff.buffer[uartRingBuff.tail] = x;
+    if((uartRingBuff.tail + 1) >= uartRingBuff.len)
+        uartRingBuff.tail = 0;
     else 
-        UART_read_buffer.tail++;
+        uartRingBuff.tail++;
 }
 
-char UART_RingBufRead (void){
-    if (UART_read_buffer.head == UART_read_buffer.tail)
+char uart_ring_buf_read (void){
+    if (uartRingBuff.head == uartRingBuff.tail)
         return 0;
-    char read = UART_read_buffer.buffer[UART_read_buffer.head];
-    UART_read_buffer.head = (UART_read_buffer.head < (UART_read_buffer.len - 1)) ? (UART_read_buffer.head + 1) : 0;
+    char read = uartRingBuff.buffer[uartRingBuff.head];
+    uartRingBuff.head = (uartRingBuff.head < (uartRingBuff.len - 1)) ? (uartRingBuff.head + 1) : 0;
     return read;
 }
 
@@ -103,22 +101,22 @@ void USART2_IRQHandler (void) {
         char c = USART2->DR;
         if (c == '\r')
             c = '\n';
-        UART_RingBufWrite(c);
+        uart_ring_buf_write(c);
         if (c == '\b') {
-            UART_RingBufWrite(' ');
-            UART_RingBufWrite('\b');
+            uart_ring_buf_write(' ');
+            uart_ring_buf_write('\b');
         }
     }
 }
 
-bool UART_IsBufferEmpty(void) {
-    return (UART_read_buffer.head == UART_read_buffer.tail);
+bool uart_is_buffer_empty(void) {
+    return (uartRingBuff.head == uartRingBuff.tail);
 }
 
 //Implements printf()
 int _write (int handle, char* data, int size) {
     UNUSED(handle);
 
-    UART_SendString(data, USART2, size);
+    uart_send_string(data, USART2, size);
     return size;
 }

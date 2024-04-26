@@ -4,7 +4,7 @@ int main (void) {
     SysClockConfig();
     InitSysTick();
     GPIO_Init();
-    UART_Init();
+    uart_init();
 
     Node_t* taskHead = NULL;
     
